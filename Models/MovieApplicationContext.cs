@@ -12,6 +12,7 @@ namespace MovieTracker.Models
         }
 
         //We are going to create a databse set of type application that we will refer to as "Applications"
-        public DbSet<Application> Applications { get; set; }
+        public DbSet<Movies> Movies { get; set; }
+        public DbSet<Categories> Categories { get; set; }
     }
 }

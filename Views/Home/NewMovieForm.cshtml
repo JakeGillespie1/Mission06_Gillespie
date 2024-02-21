@@ -1,4 +1,4 @@
-﻿@model Application
+﻿@model Movies
 @{
     ViewData["Title"] = "New Movie Form";
 }
@@ -8,21 +8,26 @@
 
 <form method="post">
     <!--In our model we will need a spot for each of these inputs-->
-    <label asp-for="Category">Category</label>
-    <input required asp-for="Category" />
+    <label asp-for="CategoryId">Category</label>
+    <select asp-for="CategoryId">
+     @foreach (Categories category in ViewBag.Categories)
+    {
+        <option value="@category.CategoryId">@category.Category</option>
+    }
+    </select>
     <br />
     <label asp-for="Title">Title</label>
     <input required asp-for="Title" />
     <br />
     <!--1878 was the year of the first supposed movie-->
     <label asp-for="Year">Year</label>
-    <input required min="1878" max="@DateTime.Now.Year" asp-for="Year" />
+    <input required min="1888" max="@DateTime.Now.Year" asp-for="Year" />
     <br />
     <label asp-for="Director">Director</label>
     <input required asp-for="Director" />
     <br />
     <label asp-for="Rating">Rating</label>
-    <select required asp-for="Rating">
+    <select asp-for="Rating">
         <option value="G">G</option>
         <option value="PG">PG</option>
         <option value="PG-13">PG-13</option>
@@ -39,7 +44,7 @@
     <input asp-for="LentTo" />
     <br />
     <label asp-for="Notes">Notes</label>
-    <textarea maxlength="25" asp-for="Notes" /></textarea>
+    <textarea maxlength="25" asp-for="Notes"></textarea>
     <br />
     <button type="submit">Submit Form</button>
 </form>

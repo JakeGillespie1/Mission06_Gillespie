@@ -1,29 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using MovieTracker.Models;
 using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MovieTracker.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(MovieApplicationContext temp) : Controller
     {
-        //private readonly ILogger<HomeController> _logger;
-
-        //public HomeController(ILogger<HomeController> logger)
-        //{
-        //    _logger = logger;
-        //}
-
         //Use the context file to build an instance of the database for use in the program.
-        private MovieApplicationContext _context;
-
-        /*
-         When this home controller is created, it builds an instance of the db and brings it in
-         The private class above allows us to use that db throughout the program
-         */
-        public HomeController(MovieApplicationContext temp) //We are going to create a constructor for the main program here...
-        {
-            _context = temp;
-        }
+        private MovieApplicationContext _context = temp;
 
         //Index Page View
         public IActionResult Index()
@@ -41,17 +26,79 @@ namespace MovieTracker.Controllers
         [HttpGet]
         public IActionResult NewMovieForm()
         {
-            return View();
+            //We need to bring in the different cartegories
+            ViewBag.Categories = _context.Categories.ToList();
+
+            return View(new Movies());
         }
 
         [HttpPost]
-        public IActionResult NewMovieForm(Application response)
+        public IActionResult NewMovieForm(Movies response)
         {
             //When the user has posted their response, go out to the tracker table and add their info...
-            _context.Applications.Add(response); //Add record (object) to the database
+            _context.Movies.Add(response); //Add record (object) to the database
             _context.SaveChanges();
+
+            ViewBag.Categories = _context.Categories
+                .OrderBy(x => x.Category)
+                .ToList();
 
             return View("NewMovieForm", response);
         }
+
+        [HttpGet]
+        public IActionResult MovieList() 
+        {
+            /*Bring the list of movie objects in and put them in a table*/
+            List<Movies> applications = _context.Movies
+                .OrderBy(x => x.Year).ToList();
+
+            //Return the view while passing in the applications
+            return View(applications);
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            //Grab correct movie
+            var movieToEdit = _context.Movies
+                .Single(x => x.MovieId == id);
+
+            //Grab the viewbag, so we can load up the names in the New Movie Form
+            ViewBag.Categories = _context.Categories
+                .OrderBy(x => x.Category)
+                .ToList();
+
+            return View("NewMovieForm", movieToEdit);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Movies updatedMovie)
+        {
+            _context.Update(updatedMovie);
+            _context.SaveChanges();
+
+            //This will take the user back to the movie list
+            return RedirectToAction("MovieList");
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var movieToDelete = _context.Movies
+                .Single(x => x.MovieId == id);
+
+            return View(movieToDelete);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(Movies movieToDelete)
+        {
+            _context.Movies.Remove(movieToDelete);
+            _context.SaveChanges();
+
+            return RedirectToAction("MovieList");
+        }
+
     }
 }
