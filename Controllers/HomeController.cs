@@ -35,15 +35,27 @@ namespace MovieTracker.Controllers
         [HttpPost]
         public IActionResult NewMovieForm(Movies response)
         {
-            //When the user has posted their response, go out to the tracker table and add their info...
-            _context.Movies.Add(response); //Add record (object) to the database
-            _context.SaveChanges();
+            if (ModelState.IsValid)
+            {             
+                //When the user has posted their response, go out to the movie list table and add the info...
+                _context.Movies.Add(response); //Add record (object) to the database
+                _context.SaveChanges();
 
-            ViewBag.Categories = _context.Categories
-                .OrderBy(x => x.Category)
-                .ToList();
+                ViewBag.Categories = _context.Categories
+                    .OrderBy(x => x.Category)
+                    .ToList();
 
-            return View("NewMovieForm", response);
+                return RedirectToAction("MovieList");
+            }
+            else
+            {
+                //We will need the category names here too, so we can load up the movie list on the form :)
+                ViewBag.Categories = _context.Categories
+                    .OrderBy(x => x.Category)
+                    .ToList();
+
+                return View("NewMovieForm", response);
+            }
         }
 
         [HttpGet]
@@ -80,6 +92,7 @@ namespace MovieTracker.Controllers
 
             //This will take the user back to the movie list
             return RedirectToAction("MovieList");
+
         }
 
         [HttpGet]

@@ -13,9 +13,9 @@ namespace MovieTracker.Models
         public int MovieId { get; set; }
 
         /*Establish foreign key relationship with category*/
-        [ForeignKey("CategoryId")]
+        [ForeignKey("CategoryId"), Required]
         public int CategoryId { get; set; }
-        public Categories Category { get; set; }
+        public Categories? Category { get; set; }
 
         [Required]
         public string Title { get; set; }
