@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieTracker.Models
 {
-    public class Movies
+    public class Movie
     {
         int year = DateTime.Now.Year;
 
@@ -15,7 +15,7 @@ namespace MovieTracker.Models
         /*Establish foreign key relationship with category*/
         [ForeignKey("CategoryId"), Required]
         public int CategoryId { get; set; }
-        public Categories? Category { get; set; }
+        public Category? Category { get; set; }
 
         [Required]
         public string Title { get; set; }

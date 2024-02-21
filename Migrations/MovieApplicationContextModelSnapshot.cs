@@ -22,7 +22,7 @@ namespace MovieTracker.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Category")
+                    b.Property<string>("CategoryName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -31,7 +31,7 @@ namespace MovieTracker.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("MovieTracker.Models.Movies", b =>
+            modelBuilder.Entity("MovieTracker.Models.Movie", b =>
                 {
                     b.Property<int>("MovieId")
                         .ValueGeneratedOnAdd()
@@ -72,15 +72,15 @@ namespace MovieTracker.Migrations
                     b.ToTable("Applications");
                 });
 
-            modelBuilder.Entity("MovieTracker.Models.Movies", b =>
+            modelBuilder.Entity("MovieTracker.Models.Movie", b =>
                 {
-                    b.HasOne("MovieTracker.Models.Categories", "Category")
+                    b.HasOne("MovieTracker.Models.Categories", "CategoryName")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("CategoryName");
                 });
 #pragma warning restore 612, 618
         }

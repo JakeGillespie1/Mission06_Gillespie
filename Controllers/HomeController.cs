@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MovieTracker.Models;
 using System.Diagnostics;
 using static System.Net.Mime.MediaTypeNames;
@@ -29,11 +30,11 @@ namespace MovieTracker.Controllers
             //We need to bring in the different cartegories
             ViewBag.Categories = _context.Categories.ToList();
 
-            return View(new Movies());
+            return View(new Movie());
         }
 
         [HttpPost]
-        public IActionResult NewMovieForm(Movies response)
+        public IActionResult NewMovieForm(Movie response)
         {
             if (ModelState.IsValid)
             {             
@@ -42,7 +43,7 @@ namespace MovieTracker.Controllers
                 _context.SaveChanges();
 
                 ViewBag.Categories = _context.Categories
-                    .OrderBy(x => x.Category)
+                    .OrderBy(x => x.CategoryName)
                     .ToList();
 
                 return RedirectToAction("MovieList");
@@ -51,7 +52,7 @@ namespace MovieTracker.Controllers
             {
                 //We will need the category names here too, so we can load up the movie list on the form :)
                 ViewBag.Categories = _context.Categories
-                    .OrderBy(x => x.Category)
+                    .OrderBy(x => x.CategoryName)
                     .ToList();
 
                 return View("NewMovieForm", response);
@@ -62,8 +63,8 @@ namespace MovieTracker.Controllers
         public IActionResult MovieList() 
         {
             /*Bring the list of movie objects in and put them in a table*/
-            List<Movies> applications = _context.Movies
-                .OrderBy(x => x.Year).ToList();
+            List<Movie> applications = _context.Movies.Include("Category")
+                .ToList();
 
             //Return the view while passing in the applications
             return View(applications);
@@ -78,14 +79,14 @@ namespace MovieTracker.Controllers
 
             //Grab the viewbag, so we can load up the names in the New Movie Form
             ViewBag.Categories = _context.Categories
-                .OrderBy(x => x.Category)
+                .OrderBy(x => x.CategoryName)
                 .ToList();
 
             return View("NewMovieForm", movieToEdit);
         }
 
         [HttpPost]
-        public IActionResult Edit(Movies updatedMovie)
+        public IActionResult Edit(Movie updatedMovie)
         {
             _context.Update(updatedMovie);
             _context.SaveChanges();
@@ -105,7 +106,7 @@ namespace MovieTracker.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(Movies movieToDelete)
+        public IActionResult Delete(Movie movieToDelete)
         {
             _context.Movies.Remove(movieToDelete);
             _context.SaveChanges();
